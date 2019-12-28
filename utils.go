@@ -40,6 +40,8 @@ func IsNotFound(data string) bool {
 		"is free",
 		"not available for registration",
 		"object does not exist",
+		"No_Se_Encontro_El_Objeto",
+		"Object_Not_Found",
 	}
 
 	data = strings.ToLower(data)

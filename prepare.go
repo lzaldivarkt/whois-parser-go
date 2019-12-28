@@ -72,6 +72,8 @@ func Prepare(text, ext string) (string, bool) {
 		return prepareBR(text), true
 	case "ir":
 		return prepareIR(text), true
+	case "mx":
+		return prepareMX(text), true
 	default:
 		return text, false
 	}
@@ -104,6 +106,60 @@ func prepareTLD(text string) string {
 			}
 		}
 		result += "\n" + v
+	}
+
+	return result
+}
+
+// prepareEDU do prepare the .edu domain
+func prepareMX(text string) string {
+	tokens := map[string][]string{
+		"Registrant:": {
+			"Name",
+			"City",
+			"State",
+			"Country",
+		},
+		"Administrative Contact:": {
+			"Name",
+			"City",
+			"State",
+			"Country",
+		},
+		"Technical Contact:": {
+			"Name",
+			"City",
+			"State",
+			"Country",
+		},
+	}
+
+	token := ""
+	index := 0
+
+	result := ""
+	for _, v := range strings.Split(text, "\n") {
+		v = strings.TrimSpace(v)
+		if v == "" {
+			continue
+		}
+		if strings.HasPrefix(v, "%") {
+			continue
+		}
+		if strings.HasSuffix(v, ":") {
+			token = ""
+			index = 0
+		}
+		if _, ok := tokens[v]; ok {
+			token = v
+		} else {
+			if token == "" {
+				result += "\n" + v
+			} else {
+				result += fmt.Sprintf("\n%s %s: %s", token[:len(token)-1], tokens[token][index], v)
+				index += 1
+			}
+		}
 	}
 
 	return result
